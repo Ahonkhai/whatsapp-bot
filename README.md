@@ -68,28 +68,39 @@ cp .env.example .env   # fill in the values below
 | `WHATSAPP_APP_SECRET` | App secret, used to verify incoming webhook signatures. Optional but strongly recommended — without it, anyone who finds your webhook URL can POST fake messages to the bot |
 | `WHATSAPP_ADMIN_NUMBERS` | Comma-separated phone numbers (E.164, no `+`) allowed to run `/broadcast`. Empty means nobody can |
 | `WHATSAPP_RECIPIENTS_FILE` | Path to the broadcast recipient list (default `recipients.txt`) |
+| `WHATSAPP_RECIPIENTS` | Comma-separated recipients instead of a file — handy on hosts where pasting into a dashboard is easier than shipping a file. Wins over `WHATSAPP_RECIPIENTS_FILE` when set |
 | `PORT` | Local port (default `8080`) |
 
-**3. Run**
+**3. Run it somewhere Meta can reach over HTTPS** — pick one:
+
+### Option A: Railway (recommended — no tunnel needed)
+
+Railway gives you a permanent public URL as soon as it deploys, so there's
+no ngrok step and nothing to keep running on your own machine.
+
+1. [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo** → pick `whatsapp-bot`. Railway detects the `Dockerfile` and builds it automatically.
+2. In the service's **Variables** tab, add `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, and `WHATSAPP_VERIFY_TOKEN` (pick any string for the last one). Add `WHATSAPP_ADMIN_NUMBERS` and `WHATSAPP_RECIPIENTS` too if you want `/broadcast` working.
+3. **Settings → Networking → Generate Domain** to get a public URL like `whatsapp-bot-production.up.railway.app`.
+4. In the Meta dashboard, **WhatsApp → Configuration → Edit**:
+   - Callback URL: `https://<your-railway-domain>/webhook`
+   - Verify token: the same string as `WHATSAPP_VERIFY_TOKEN`
+   - **Verify and Save**, then subscribe to the `messages` field.
+5. Message the test number from WhatsApp — the bot replies.
+
+Every `git push` to `main` redeploys automatically.
+
+### Option B: Run it locally with a tunnel
 
 ```bash
-python run.py
+python run.py            # starts on localhost:8080
+ngrok http 8080           # in another terminal
 ```
 
-**4. Expose it and register the webhook**
-
-Meta needs to reach your webhook over HTTPS. For local development, tunnel
-it (e.g. `ngrok http 8080`), then in the Meta dashboard under
-**WhatsApp → Configuration**:
-
-- Callback URL: `https://<your-tunnel>/webhook`
-- Verify token: the same string as `WHATSAPP_VERIFY_TOKEN`
-- Subscribe to the `messages` webhook field
-
-Meta calls `GET /webhook` once to confirm you control the URL, then sends
-incoming messages as `POST /webhook`.
-
-**5. Message the test number** from WhatsApp and the bot replies.
+Then register the webhook the same way as step 4 above, using the
+`https://...ngrok-free.app` URL ngrok prints instead of a Railway domain.
+Useful for quick iteration, but the tunnel dies when your machine sleeps or
+ngrok restarts (the URL also changes on a free plan restart) — Railway is
+the better choice for anything meant to stay up.
 
 ## Development
 
@@ -120,14 +131,12 @@ so new commands can be unit tested without touching Flask or the network.
 
 ## Deploying
 
-Any host that can run a long-lived Flask/WSGI process and gets you an HTTPS
-URL works (Railway, Fly.io, Render, a VPS behind a reverse proxy, etc.). Run
-behind a real WSGI server in production, e.g.:
-
-```bash
-pip install gunicorn
-gunicorn -w 2 -b 0.0.0.0:$PORT run:app
-```
+The `Dockerfile` runs the app behind `gunicorn` and reads `PORT` at
+container start, so it works on Railway as-is (see Option A above) and on
+any other host that can build a Dockerfile and gets you an HTTPS URL
+(Fly.io, Render, a VPS, etc.).
 
 Set `WHATSAPP_APP_SECRET` in production — without it the webhook accepts
-unsigned requests from anyone who finds the URL.
+unsigned requests from anyone who finds the URL. Use a permanent access
+token too (System User, in Business Settings) — the one from API Setup
+expires after 24 hours.

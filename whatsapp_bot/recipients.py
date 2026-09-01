@@ -21,3 +21,10 @@ def load_recipients(path: str) -> list[str]:
         if number:
             numbers.append(number)
     return numbers
+
+
+def resolve_recipients(file_path: str, env_value: str) -> list[str]:
+    """WHATSAPP_RECIPIENTS (comma-separated) wins when set; otherwise the file."""
+    if env_value.strip():
+        return [n.strip() for n in env_value.split(",") if n.strip()]
+    return load_recipients(file_path)

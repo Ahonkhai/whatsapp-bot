@@ -7,7 +7,7 @@ from flask import Flask, request
 from whatsapp_bot import client, config
 from whatsapp_bot.broadcast import send_broadcast
 from whatsapp_bot.commands import handle_message
-from whatsapp_bot.recipients import load_recipients
+from whatsapp_bot.recipients import resolve_recipients
 from whatsapp_bot.security import is_valid_signature
 
 log = logging.getLogger(__name__)
@@ -80,9 +80,9 @@ def _handle_broadcast(sender: str, body: str) -> None:
         client.send_text(sender, "Usage: /broadcast <message>")
         return
 
-    recipients = [n for n in load_recipients(config.RECIPIENTS_FILE) if n != sender]
+    recipients = [n for n in resolve_recipients(config.RECIPIENTS_FILE, config.RECIPIENTS) if n != sender]
     if not recipients:
-        client.send_text(sender, f"No recipients in {config.RECIPIENTS_FILE}.")
+        client.send_text(sender, "No recipients configured.")
         return
 
     result = send_broadcast(text, recipients, client.send_text)

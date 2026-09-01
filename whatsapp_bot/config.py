@@ -24,3 +24,7 @@ LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 # can broadcast at all.
 ADMIN_NUMBERS = {n.strip() for n in os.environ.get("WHATSAPP_ADMIN_NUMBERS", "").split(",") if n.strip()}
 RECIPIENTS_FILE = os.environ.get("WHATSAPP_RECIPIENTS_FILE", "recipients.txt")
+# Comma-separated recipients, for hosts where a committed/mounted file isn't
+# convenient (e.g. pasted straight into Railway's dashboard). Takes priority
+# over RECIPIENTS_FILE when set.
+RECIPIENTS = os.environ.get("WHATSAPP_RECIPIENTS", "")
