@@ -5,7 +5,9 @@ import logging
 from flask import Flask, request
 
 from whatsapp_bot import client, config
+from whatsapp_bot.broadcast import send_broadcast
 from whatsapp_bot.commands import handle_message
+from whatsapp_bot.recipients import load_recipients
 from whatsapp_bot.security import is_valid_signature
 
 log = logging.getLogger(__name__)
@@ -58,6 +60,30 @@ def _handle_message(message: dict) -> None:
     if not sender or message.get("type") != "text":
         return
 
-    body = message.get("text", {}).get("body", "")
+    body = message.get("text", {}).get("body", "").strip()
+
+    if body.lower().startswith("/broadcast"):
+        _handle_broadcast(sender, body)
+        return
+
     reply = handle_message(body)
     client.send_text(sender, reply)
+
+
+def _handle_broadcast(sender: str, body: str) -> None:
+    if sender not in config.ADMIN_NUMBERS:
+        client.send_text(sender, "You're not authorized to broadcast.")
+        return
+
+    text = body[len("/broadcast"):].strip()
+    if not text:
+        client.send_text(sender, "Usage: /broadcast <message>")
+        return
+
+    recipients = [n for n in load_recipients(config.RECIPIENTS_FILE) if n != sender]
+    if not recipients:
+        client.send_text(sender, f"No recipients in {config.RECIPIENTS_FILE}.")
+        return
+
+    result = send_broadcast(text, recipients, client.send_text)
+    client.send_text(sender, result.summary)

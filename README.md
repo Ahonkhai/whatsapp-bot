@@ -10,7 +10,38 @@ skeleton to build real features onto.
 |---|---|
 | `/ping` | `pong` |
 | `/help` | Lists the commands |
+| `/broadcast <message>` | **Admins only.** Sends `<message>` to everyone in the recipient list |
 | anything else | Echoed back verbatim |
+
+### Broadcasting to a list of people
+
+`/broadcast` is gated two ways:
+
+- **Who can trigger it** — `WHATSAPP_ADMIN_NUMBERS` (comma-separated, E.164,
+  no leading `+`). Anyone else who sends `/broadcast` gets "You're not
+  authorized to broadcast."
+- **Who receives it** — `recipients.txt` (path configurable via
+  `WHATSAPP_RECIPIENTS_FILE`), one phone number per line, `#` comments and
+  blank lines ignored. Copy `recipients.example.txt` to get started.
+  `recipients.txt` is gitignored — it's personal data, don't commit it.
+
+An admin messages the bot with `/broadcast <message>` and it fans that
+message out to everyone in the file, then replies with a summary
+(`Broadcast sent to 4/5. Failed: <number>` if any failed).
+
+**Read this before using it on real numbers:**
+
+- WhatsApp Cloud API has no access to your phone's contacts — there is no
+  API for "message everyone I know." The recipient list is whatever you put
+  in `recipients.txt`, and only people who actually agreed to hear from this
+  bot should be on it.
+- Outside a 24-hour window since someone last messaged the bot, WhatsApp
+  only allows sending pre-approved **message templates**, not free-form
+  text — an unsolicited `/broadcast` to someone who hasn't messaged in
+  recently will fail (or worse, get the number flagged for spam). This
+  bot sends free-form text, so in practice `/broadcast` reliably reaches
+  only people who've messaged the bot within the last 24 hours, or you'll
+  need to register a template with Meta for the rest.
 
 ## Setup
 
@@ -35,6 +66,8 @@ cp .env.example .env   # fill in the values below
 | `WHATSAPP_PHONE_NUMBER_ID` | The sending number's ID (API Setup page) |
 | `WHATSAPP_VERIFY_TOKEN` | Any string you choose — re-entered in the Meta dashboard to prove you control the webhook |
 | `WHATSAPP_APP_SECRET` | App secret, used to verify incoming webhook signatures. Optional but strongly recommended — without it, anyone who finds your webhook URL can POST fake messages to the bot |
+| `WHATSAPP_ADMIN_NUMBERS` | Comma-separated phone numbers (E.164, no `+`) allowed to run `/broadcast`. Empty means nobody can |
+| `WHATSAPP_RECIPIENTS_FILE` | Path to the broadcast recipient list (default `recipients.txt`) |
 | `PORT` | Local port (default `8080`) |
 
 **3. Run**
@@ -74,8 +107,11 @@ whatsapp_bot/
   app.py                 Flask routes: webhook verification + incoming messages
   client.py               sends replies via the Cloud API
   commands.py              message text -> reply text (no HTTP/WhatsApp concerns)
+  broadcast.py             fans a message out to a recipient list
+  recipients.py            loads the recipient list from a text file
   security.py              X-Hub-Signature-256 verification
   logging_setup.py
+recipients.example.txt   copy to recipients.txt and fill in real numbers
 tests/
 ```
 

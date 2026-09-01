@@ -1,0 +1,8 @@
+# Broadcast recipient list.
+# One phone number per line, E.164 format without the leading '+'.
+# Blank lines and comments (like this one) are ignored.
+#
+# Copy this file to `recipients.txt` (gitignored) and fill in real numbers
+# of people who've agreed to receive messages from this bot.
+15551234567   # Alex
+15559876543   # Sam

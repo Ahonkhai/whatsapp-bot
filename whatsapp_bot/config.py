@@ -18,3 +18,9 @@ APP_SECRET = os.environ.get("WHATSAPP_APP_SECRET", "")
 
 PORT = int(os.environ.get("PORT", "8080"))
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
+
+# Broadcast feature: who's allowed to trigger /broadcast, and where the
+# recipient list lives. Both are opt-in — an empty admin set means nobody
+# can broadcast at all.
+ADMIN_NUMBERS = {n.strip() for n in os.environ.get("WHATSAPP_ADMIN_NUMBERS", "").split(",") if n.strip()}
+RECIPIENTS_FILE = os.environ.get("WHATSAPP_RECIPIENTS_FILE", "recipients.txt")

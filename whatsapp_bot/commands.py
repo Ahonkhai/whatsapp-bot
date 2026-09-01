@@ -8,6 +8,7 @@ HELP_TEXT = (
     "Available commands:\n"
     "/help - show this message\n"
     "/ping - check the bot is alive\n"
+    "/broadcast <message> - (admins only) send a message to everyone on the recipient list\n"
     "Anything else is echoed back."
 )
 

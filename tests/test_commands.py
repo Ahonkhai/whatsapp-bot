@@ -11,6 +11,7 @@ def test_ping_case_insensitive():
 
 def test_help():
     assert handle_message("/help") == HELP_TEXT
+    assert "/broadcast" in HELP_TEXT
 
 
 def test_echo():
