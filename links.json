@@ -1,0 +1,77 @@
+{
+  "title": "🔗 Your links",
+  "categories": [
+    {
+      "id": "crypto_ex",
+      "name": "Crypto Exchange",
+      "emoji": "🪙",
+      "links": [
+        {"title": "Example Exchange", "url": "https://example.com"}
+      ]
+    },
+    {
+      "id": "crypto_wallets",
+      "name": "Crypto Wallets",
+      "emoji": "👛",
+      "links": [
+        {"title": "Example Wallet", "url": "https://example.com"}
+      ]
+    },
+    {
+      "id": "mail",
+      "name": "Mail",
+      "emoji": "📥",
+      "links": [
+        {"title": "Example Mail", "url": "https://example.com"}
+      ]
+    },
+    {
+      "id": "social",
+      "name": "Social Media",
+      "emoji": "👥",
+      "links": [
+        {"title": "Example Social", "url": "https://example.com"}
+      ]
+    },
+    {
+      "id": "bank_us",
+      "name": "Banking",
+      "emoji": "🇺🇸",
+      "links": [
+        {"title": "Example US Bank", "url": "https://example.com"}
+      ]
+    },
+    {
+      "id": "finance_us",
+      "name": "Finance Services",
+      "emoji": "🇺🇸",
+      "links": [
+        {"title": "Example Finance", "url": "https://example.com"}
+      ]
+    },
+    {
+      "id": "bank_uk",
+      "name": "Banking",
+      "emoji": "🇬🇧",
+      "links": [
+        {"title": "Example UK Bank", "url": "https://example.com"}
+      ]
+    },
+    {
+      "id": "gaming",
+      "name": "Gaming",
+      "emoji": "🎧",
+      "links": [
+        {"title": "Example Game", "url": "https://example.com"}
+      ]
+    },
+    {
+      "id": "uncat",
+      "name": "Uncategorized",
+      "emoji": "",
+      "links": [
+        {"title": "Example Site", "url": "https://example.com"}
+      ]
+    }
+  ]
+}

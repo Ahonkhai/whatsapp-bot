@@ -77,7 +77,7 @@ def test_button_tap_is_acknowledged_and_edits_the_message(client, monkeypatch):
         lambda chat_id, message_id, text, reply_markup=None, parse_mode=None: edited.append((chat_id, message_id, text)),
     )
 
-    service = services.SERVICES[0]
+    service = services.find("plans")  # a normal detail-screen service
     resp = _post(client, _callback_update(f"{services.SERVICE_PREFIX}{service.id}"))
 
     assert resp.status_code == 200

@@ -55,7 +55,7 @@ def test_empty_message():
 
 
 def test_button_shows_service_details_and_a_back_button():
-    service = services.SERVICES[0]
+    service = services.find("plans")  # a normal detail-screen service
     reply = handle_callback(f"{services.SERVICE_PREFIX}{service.id}")
     assert service.description in reply.text
     assert reply.reply_markup == services.back_keyboard()
@@ -70,3 +70,25 @@ def test_unknown_callback_data_is_ignored():
     assert handle_callback("svc:does-not-exist") is None
     assert handle_callback("garbage") is None
     assert handle_callback("") is None
+
+
+def test_get_my_links_button_opens_the_category_list():
+    reply = handle_callback("svc:links")
+    assert reply is not None
+    labels = [b["text"] for row in reply.reply_markup["inline_keyboard"] for b in row]
+    assert any("Social Media" in l for l in labels)
+    assert labels[-1] == "⬅️ Back"
+
+
+def test_links_home_route_also_opens_the_category_list():
+    assert handle_callback("lnk:home").reply_markup == handle_callback("svc:links").reply_markup
+
+
+def test_category_button_shows_that_category():
+    reply = handle_callback("lnk:c:social")
+    assert reply is not None
+    assert "Social Media" in reply.text
+
+
+def test_unknown_category_is_ignored():
+    assert handle_callback("lnk:c:does-not-exist") is None

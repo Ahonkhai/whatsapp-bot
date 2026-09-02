@@ -7,7 +7,7 @@ with plain values in, plain values out.
 from dataclasses import dataclass
 from html import escape
 
-from telegram_bot import services
+from telegram_bot import links, services
 
 HELP_TEXT = (
     "Available commands:\n"
@@ -77,10 +77,25 @@ def handle_message(body: str, user_id: int | str | None = None) -> Reply:
     return Reply(text)
 
 
+def links_home_reply() -> Reply:
+    """The 'Get my links' category list."""
+    return Reply(links.home_text(), links.home_keyboard(), parse_mode="HTML")
+
+
 def handle_callback(data: str) -> Reply | None:
     """Turn a button's callback_data into a reply, or None if unrecognised."""
     if data == services.BACK_ACTION:
         return menu_reply()
+
+    # The "Get my links" service opens the categories instead of a text screen.
+    if data == links.LINKS_HOME or data == f"{services.SERVICE_PREFIX}links":
+        return links_home_reply()
+
+    if data.startswith(links.CATEGORY_PREFIX):
+        category = links.CATALOG.find(data[len(links.CATEGORY_PREFIX):])
+        if category is None:
+            return None
+        return Reply(links.category_text(category), links.category_keyboard(category), parse_mode="HTML")
 
     if data.startswith(services.SERVICE_PREFIX):
         service = services.find(data[len(services.SERVICE_PREFIX):])

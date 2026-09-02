@@ -34,7 +34,7 @@ SERVICES: tuple[Service, ...] = (
     Service(
         id="links",
         label="🔗 Get my links",
-        description="View the links on your account, copy them, and check how many clicks each one has.",
+        description="Browse the sites I've built, by category.",  # unused: svc:links opens the category menu (see links.py)
     ),
     Service(
         id="plans",

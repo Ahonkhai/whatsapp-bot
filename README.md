@@ -83,6 +83,43 @@ to showing the description. Telegram only accepts `https://` and `tg://`
 URLs in a keyboard and rejects the whole keyboard otherwise, so a test
 checks the scheme of anything you configure.
 
+## The "Get my links" showcase
+
+Tapping **🔗 Get my links** opens a three-level menu: categories → the sites
+in a category → the site itself (a button that opens the URL). It's driven
+entirely by `links.json`, so adding a site is a data edit, no code:
+
+```json
+{
+  "title": "🔗 Your links",
+  "categories": [
+    {
+      "id": "social",
+      "name": "Social Media",
+      "emoji": "👥",
+      "links": [
+        {"title": "My Instagram template", "url": "https://your-site.com"}
+      ]
+    }
+  ]
+}
+```
+
+- Each category needs a unique `id` (kept short — it rides in the button's
+  callback data). Two categories can share a `name` and be told apart by
+  `emoji`, like the US 🇺🇸 and UK 🇬🇧 "Banking" folders.
+- Every link needs a `title` and a `url` (must be `https://` or `tg://` —
+  Telegram rejects other schemes, so those are skipped with a log line).
+- The counts next to each category (`Social Media (11)`) are computed from
+  the list — nothing to keep in sync.
+- The file is read at startup, so edits take effect on the next deploy or
+  restart. A missing or malformed file just makes the menu empty and logs
+  why; it never takes the bot down. The path is configurable via
+  `TELEGRAM_LINKS_FILE` (default `links.json`).
+
+The shipped `links.json` has the categories from the screenshot with one
+placeholder link each — replace the titles and URLs with your real sites.
+
 ## Broadcasting to a list of people
 
 `/broadcast` is gated two ways:
@@ -214,10 +251,12 @@ telegram_bot/
   client.py               sends messages/edits via the Bot API
   commands.py              message or button -> reply (no HTTP/Telegram concerns)
   services.py              the services catalog and its inline keyboards
+  links.py                 the "Get my links" showcase, loaded from links.json
   broadcast.py             fans a message out to a recipient list
   recipients.py            loads the recipient list from a text file
   security.py              webhook secret-token check
   logging_setup.py
+links.json               the showcase data: categories and their sites
 recipients.example.txt   copy to recipients.txt and fill in real chat IDs
 tests/
 ```

@@ -41,3 +41,6 @@ RECIPIENTS_FILE = os.environ.get("TELEGRAM_RECIPIENTS_FILE", "recipients.txt")
 # convenient (e.g. pasted straight into Railway's dashboard). Takes priority
 # over RECIPIENTS_FILE when set.
 RECIPIENTS = os.environ.get("TELEGRAM_RECIPIENTS", "")
+
+# The "Get my links" showcase data (see telegram_bot/links.py).
+LINKS_FILE = os.environ.get("TELEGRAM_LINKS_FILE", "links.json")
