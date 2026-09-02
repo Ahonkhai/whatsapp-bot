@@ -1,6 +1,6 @@
 import logging
 
-from whatsapp_bot import config
+from telegram_bot import config
 
 
 def setup() -> None:
