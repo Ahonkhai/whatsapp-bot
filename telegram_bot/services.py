@@ -39,7 +39,7 @@ SERVICES: tuple[Service, ...] = (
     Service(
         id="plans",
         label="💎 Memberships and plans",
-        description="Compare what each plan includes and upgrade or renew your membership.",
+        description="See membership plans and buy access.",  # unused: svc:plans opens the store (see store.py)
     ),
     Service(
         id="add_domain",

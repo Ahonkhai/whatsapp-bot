@@ -44,3 +44,6 @@ RECIPIENTS = os.environ.get("TELEGRAM_RECIPIENTS", "")
 
 # The "Get my links" showcase data (see telegram_bot/links.py).
 LINKS_FILE = os.environ.get("TELEGRAM_LINKS_FILE", "links.json")
+
+# The "Memberships and plans" store data (see telegram_bot/store.py).
+STORE_FILE = os.environ.get("TELEGRAM_STORE_FILE", "store.json")

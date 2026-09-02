@@ -1,0 +1,14 @@
+{
+  "status_text": "You don't have an active membership.",
+  "checkout_text": "To purchase, message the admin with the plan name and you'll be given access.",
+  "contact_url": "",
+  "plans": [
+    {"id": "1h",  "label": "1Hour Trial",       "price": "$49",   "duration": "0d",  "url": ""},
+    {"id": "1d",  "label": "1Day Trial",        "price": "$200",  "duration": "1d",  "url": ""},
+    {"id": "7d",  "label": "7Day Membership",   "price": "$1000", "duration": "7d",  "url": ""},
+    {"id": "12d", "label": "12Day Membership",  "price": "$1500", "duration": "12d", "url": ""},
+    {"id": "30d", "label": "30Day Membership",  "price": "$3000", "duration": "30d", "url": ""},
+    {"id": "60d", "label": "60Day Membership",  "price": "$4850", "duration": "60d", "url": ""}
+  ],
+  "single_pages": []
+}

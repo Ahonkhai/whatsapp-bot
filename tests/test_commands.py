@@ -55,7 +55,7 @@ def test_empty_message():
 
 
 def test_button_shows_service_details_and_a_back_button():
-    service = services.find("plans")  # a normal detail-screen service
+    service = services.find("add_domain")  # a normal detail-screen service
     reply = handle_callback(f"{services.SERVICE_PREFIX}{service.id}")
     assert service.description in reply.text
     assert reply.reply_markup == services.back_keyboard()

@@ -120,6 +120,45 @@ entirely by `links.json`, so adding a site is a data edit, no code:
 The shipped `links.json` has the categories from the screenshot with one
 placeholder link each — replace the titles and URLs with your real sites.
 
+## The "Memberships and plans" store
+
+Tapping **💎 Memberships and plans** opens a purchase flow:
+
+```
+membership status → Store → Full Membership Plans → a plan (checkout)
+                         → Single Page Access     → a page  (checkout)
+```
+
+It's driven by `store.json`:
+
+```json
+{
+  "status_text": "You don't have an active membership.",
+  "checkout_text": "To purchase, message the admin ...",
+  "contact_url": "https://t.me/your_username",
+  "plans": [
+    {"id": "7d", "label": "7Day Membership", "price": "$1000", "duration": "7d", "url": ""}
+  ],
+  "single_pages": []
+}
+```
+
+- Each plan/page needs a unique short `id`; `price` and `duration` are
+  optional and just format the button (`7Day Membership — $1000 / 7d`).
+- Tapping a plan shows a checkout screen with `checkout_text`. If the plan
+  has its own `url` (a payment link) it becomes a **💳 Continue** button;
+  otherwise `contact_url` is used, if set. With neither, the screen is just
+  the details and a back button.
+- `single_pages` has the same shape as `plans`. Empty is fine — the section
+  shows "No single pages available yet."
+- Read at startup; a missing/broken file falls back to defaults and logs why.
+  Path via `TELEGRAM_STORE_FILE` (default `store.json`).
+
+**The status line is the same for everyone** — the bot has no per-user
+membership store. Real "you have / don't have a membership" state, tied to
+who's asking, would need a database keyed by Telegram user id and a way to
+mark someone paid; this flow is the storefront, not the entitlement system.
+
 ## Broadcasting to a list of people
 
 `/broadcast` is gated two ways:
@@ -252,11 +291,13 @@ telegram_bot/
   commands.py              message or button -> reply (no HTTP/Telegram concerns)
   services.py              the services catalog and its inline keyboards
   links.py                 the "Get my links" showcase, loaded from links.json
+  store.py                 the "Memberships and plans" flow, loaded from store.json
   broadcast.py             fans a message out to a recipient list
   recipients.py            loads the recipient list from a text file
   security.py              webhook secret-token check
   logging_setup.py
 links.json               the showcase data: categories and their sites
+store.json               the store data: membership plans and prices
 recipients.example.txt   copy to recipients.txt and fill in real chat IDs
 tests/
 ```

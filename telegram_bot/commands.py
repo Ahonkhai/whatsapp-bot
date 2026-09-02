@@ -7,7 +7,7 @@ with plain values in, plain values out.
 from dataclasses import dataclass
 from html import escape
 
-from telegram_bot import links, services
+from telegram_bot import links, services, store
 
 HELP_TEXT = (
     "Available commands:\n"
@@ -82,6 +82,30 @@ def links_home_reply() -> Reply:
     return Reply(links.home_text(), links.home_keyboard(), parse_mode="HTML")
 
 
+def _screen(pair) -> Reply:
+    text, keyboard = pair
+    return Reply(text, keyboard, parse_mode="HTML")
+
+
+def _handle_store(data: str) -> Reply | None:
+    """Routes for the memberships/plans store, or None if `data` isn't one."""
+    if data == store.STATUS_ACTION or data == f"{services.SERVICE_PREFIX}plans":
+        return _screen(store.status_screen())
+    if data == store.STORE_HOME:
+        return _screen(store.store_home_screen())
+    if data == store.STORE_PLANS:
+        return _screen(store.plans_screen())
+    if data == store.STORE_PAGES:
+        return _screen(store.pages_screen())
+    if data.startswith(store.PLAN_PREFIX):
+        item = store.STORE.find_plan(data[len(store.PLAN_PREFIX):])
+        return _screen(store.plan_checkout_screen(item)) if item else None
+    if data.startswith(store.PAGE_PREFIX):
+        item = store.STORE.find_page(data[len(store.PAGE_PREFIX):])
+        return _screen(store.page_checkout_screen(item)) if item else None
+    return None
+
+
 def handle_callback(data: str) -> Reply | None:
     """Turn a button's callback_data into a reply, or None if unrecognised."""
     if data == services.BACK_ACTION:
@@ -96,6 +120,11 @@ def handle_callback(data: str) -> Reply | None:
         if category is None:
             return None
         return Reply(links.category_text(category), links.category_keyboard(category), parse_mode="HTML")
+
+    # The "Memberships and plans" store flow.
+    store_reply = _handle_store(data)
+    if store_reply is not None:
+        return store_reply
 
     if data.startswith(services.SERVICE_PREFIX):
         service = services.find(data[len(services.SERVICE_PREFIX):])
