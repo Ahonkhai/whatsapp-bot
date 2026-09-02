@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 def _call(method: str, payload: dict[str, Any]) -> None:
-    response = requests.post(f"{config.API_URL}/{method}", json=payload, timeout=10)
+    response = requests.post(f"{config.api_url()}/{method}", json=payload, timeout=10)
     if not response.ok:
         log.error("%s failed (%s): %s", method, response.status_code, response.text)
     response.raise_for_status()

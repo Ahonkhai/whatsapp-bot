@@ -142,7 +142,8 @@ cp .env.example .env   # fill in the values below
 |---|---|
 | `TELEGRAM_BOT_TOKEN` | The token BotFather gave you |
 | `TELEGRAM_WEBHOOK_SECRET` | Any random string. Telegram echoes it back in the `X-Telegram-Bot-Api-Secret-Token` header on every update, and the app rejects updates without it. Optional but strongly recommended — without it, anyone who finds your webhook URL can POST fake updates to the bot |
-| `TELEGRAM_WEBHOOK_URL` | Public HTTPS base URL of this app, used by `set_webhook.py` (no trailing `/webhook`) |
+| `TELEGRAM_WEBHOOK_URL` | Public HTTPS base URL of this app, no trailing `/webhook`. **On Railway, leave it blank** — `RAILWAY_PUBLIC_DOMAIN` is injected and used automatically |
+| `TELEGRAM_AUTO_SET_WEBHOOK` | Register the webhook on startup (default `true`). Set `false` to manage it by hand with `set_webhook.py` |
 | `TELEGRAM_ADMIN_IDS` | Comma-separated numeric user IDs allowed to run `/broadcast`. Empty means nobody can |
 | `TELEGRAM_RECIPIENTS_FILE` | Path to the broadcast recipient list (default `recipients.txt`) |
 | `TELEGRAM_RECIPIENTS` | Comma-separated chat IDs instead of a file — handy on hosts where pasting into a dashboard is easier than shipping a file. Wins over `TELEGRAM_RECIPIENTS_FILE` when set |
@@ -156,23 +157,30 @@ Railway gives you a permanent public URL as soon as it deploys, so there's
 no ngrok step and nothing to keep running on your own machine.
 
 1. [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo** → pick this repo. Railway detects the `Dockerfile` and builds it automatically.
-2. In the service's **Variables** tab, add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_WEBHOOK_SECRET` (pick any random string for the latter). Add `TELEGRAM_ADMIN_IDS` and `TELEGRAM_RECIPIENTS` too if you want `/broadcast` working.
-3. **Settings → Networking → Generate Domain** to get a public URL like `telegram-bot-production.up.railway.app`.
-4. Register the webhook — Telegram has no dashboard for this, it's one API call:
+2. **Settings → Networking → Generate Domain** to get a public URL like `telegram-bot-production.up.railway.app`. Do this *before* the next step — the app reads the domain at startup.
+3. In the service's **Variables** tab, add:
+   - `TELEGRAM_BOT_TOKEN` — paste the token from BotFather here, and nowhere else.
+   - `TELEGRAM_WEBHOOK_SECRET` — any random string (e.g. `openssl rand -hex 16`).
+   - `TELEGRAM_ADMIN_IDS` and `TELEGRAM_RECIPIENTS` too, if you want `/broadcast` working.
 
-   ```bash
-   TELEGRAM_BOT_TOKEN=... \
-   TELEGRAM_WEBHOOK_URL=https://<your-railway-domain> \
-   TELEGRAM_WEBHOOK_SECRET=<same string as step 2> \
-   python set_webhook.py
-   ```
-
-   It prints `{"ok":true,...}` on success. Run it again whenever the URL
-   changes; `python set_webhook.py delete` removes it.
-5. Open the bot in Telegram and tap **Start** — the welcome and the services
+   Saving variables triggers a redeploy. On boot the app registers its own
+   webhook with Telegram, so there's nothing else to run — the logs show
+   `webhook registered at https://.../webhook`.
+4. Open the bot in Telegram and tap **Start** — the welcome and the services
    buttons appear.
 
-Every `git push` to `main` redeploys automatically.
+Every `git push` to `main` redeploys automatically, and each deploy
+re-registers the webhook.
+
+**If the bot stays silent**, check the deploy logs. The app says which piece
+is missing rather than failing quietly:
+
+| Log line | Fix |
+|---|---|
+| `TELEGRAM_BOT_TOKEN is not set` | Add the variable in step 3 |
+| `no public URL known` | Generate the domain (step 2), then redeploy |
+| `could not register the webhook on startup` | Usually a bad token — check for a stray space when pasting |
+| `TELEGRAM_WEBHOOK_SECRET not set` on every update | Harmless but insecure; add the variable |
 
 ### Option B: Run it locally with a tunnel
 
@@ -198,9 +206,10 @@ Layout:
 
 ```
 run.py                  entrypoint
-set_webhook.py          registers (or deletes) the webhook with Telegram
+set_webhook.py          registers (or deletes) the webhook by hand
 telegram_bot/
   config.py              every environment variable
+  webhook.py             registering the webhook, incl. on startup
   app.py                 Flask route: incoming updates -> replies
   client.py               sends messages/edits via the Bot API
   commands.py              message or button -> reply (no HTTP/Telegram concerns)

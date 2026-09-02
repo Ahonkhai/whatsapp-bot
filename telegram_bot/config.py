@@ -4,7 +4,13 @@ import os
 
 # Bot API
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
+
+
+def api_url() -> str:
+    """Base URL for Bot API calls. Read at call time, not import time, so the
+    token can be swapped in tests without reimporting the module."""
+    return f"https://api.telegram.org/bot{BOT_TOKEN}"
+
 
 # Secret token echoed back by Telegram in the X-Telegram-Bot-Api-Secret-Token
 # header on every webhook delivery. Optional, but strongly recommended in
@@ -12,9 +18,16 @@ API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 # updates to the bot. Set the same value here and when calling setWebhook.
 WEBHOOK_SECRET = os.environ.get("TELEGRAM_WEBHOOK_SECRET", "")
 
-# Public HTTPS URL of this app, used by set_webhook.py to register the
-# webhook with Telegram (e.g. https://my-bot.up.railway.app).
+# Public HTTPS URL of this app, used to register the webhook with Telegram
+# (e.g. https://my-bot.up.railway.app). Railway injects RAILWAY_PUBLIC_DOMAIN
+# once a domain is generated, so on Railway this needs no configuring.
 WEBHOOK_URL = os.environ.get("TELEGRAM_WEBHOOK_URL", "")
+RAILWAY_DOMAIN = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "")
+
+# Register the webhook automatically on startup. Means the token never has to
+# leave the host to get the bot running; set to "false" to manage the webhook
+# by hand with set_webhook.py instead.
+AUTO_SET_WEBHOOK = os.environ.get("TELEGRAM_AUTO_SET_WEBHOOK", "true").strip().lower() not in ("false", "0", "no")
 
 PORT = int(os.environ.get("PORT", "8080"))
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
