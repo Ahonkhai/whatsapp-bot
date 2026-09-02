@@ -78,9 +78,9 @@ cp .env.example .env   # fill in the values below
 Railway gives you a permanent public URL as soon as it deploys, so there's
 no ngrok step and nothing to keep running on your own machine.
 
-1. [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo** → pick `whatsapp-bot`. Railway detects the `Dockerfile` and builds it automatically.
+1. [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo** → pick `bot-bot`. Railway detects the `Dockerfile` and builds it automatically.
 2. In the service's **Variables** tab, add `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, and `WHATSAPP_VERIFY_TOKEN` (pick any string for the last one). Add `WHATSAPP_ADMIN_NUMBERS` and `WHATSAPP_RECIPIENTS` too if you want `/broadcast` working.
-3. **Settings → Networking → Generate Domain** to get a public URL like `whatsapp-bot-production.up.railway.app`.
+3. **Settings → Networking → Generate Domain** to get a public URL like `bot-bot-production.up.railway.app`.
 4. In the Meta dashboard, **WhatsApp → Configuration → Edit**:
    - Callback URL: `https://<your-railway-domain>/webhook`
    - Verify token: the same string as `WHATSAPP_VERIFY_TOKEN`
