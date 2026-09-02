@@ -15,9 +15,10 @@ Someone opens the chat and taps **Start**:
 I'm here to help you find what you need. Pick one of the services
 below to learn more.
 
-  [ 💼 Consulting ]  [ 🛠 Development ]
-  [ 🤝 Support    ]  [ 💳 Pricing     ]
-  [ 📩 Contact    ]
+  [ 🔗 Get my links  ]  [ 💎 Memberships and plans ]
+  [ ➕ Add a domain  ]  [ 🌐 My domain             ]
+  [ 🎁 Refer and earn ]  [ 📢 Help channel         ]
+  [ 🛟 Support       ]
 ```
 
 Tapping a button replaces that message with the service's details and a
@@ -43,9 +44,9 @@ with copies of it.
 ```python
 SERVICES: tuple[Service, ...] = (
     Service(
-        id="consulting",
-        label="💼 Consulting",
-        description="One-on-one sessions to scope your project and pick an approach.",
+        id="links",
+        label="🔗 Get my links",
+        description="View the links on your account, copy them, and check how many clicks each one has.",
     ),
     ...
 )
@@ -55,6 +56,28 @@ Add, remove, or reword entries and the menu, the buttons, and the detail
 screens all follow. Two constraints: `id` goes into the button's
 `callback_data`, which Telegram caps at 64 bytes (a test enforces this), and
 `BUTTONS_PER_ROW` controls the layout.
+
+**The descriptions are placeholders — replace them with your real copy.**
+
+### Link buttons
+
+Give a service a `url` and its button opens that link directly instead of
+showing a detail screen:
+
+```python
+Service(
+    id="help_channel",
+    label="📢 Help channel",
+    description="Announcements, guides, and updates.",
+    url="https://t.me/your_channel",
+)
+```
+
+`help_channel` and `support` are set up this way but with `url=""` — fill
+those in and the buttons become links; leave them empty and they fall back
+to showing the description. Telegram only accepts `https://` and `tg://`
+URLs in a keyboard and rejects the whole keyboard otherwise, so a test
+checks the scheme of anything you configure.
 
 ## Broadcasting to a list of people
 

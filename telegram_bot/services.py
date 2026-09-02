@@ -5,6 +5,10 @@ menu, the buttons and the detail screens all follow. Each service needs a
 short `id` (used as the button's callback_data, so keep it under ~30 chars
 and free of spaces), a `label` for the button, and a `description` shown
 when someone taps it.
+
+Give a service a `url` instead and its button opens that link directly
+rather than showing a detail screen — the right shape for a public channel
+or a support chat.
 """
 
 from dataclasses import dataclass
@@ -20,33 +24,52 @@ class Service:
     id: str
     label: str
     description: str
+    # When set, the button is a link straight to this URL and `description`
+    # is never shown. Must be https:// or tg:// — Telegram rejects the
+    # keyboard outright otherwise.
+    url: str = ""
 
 
 SERVICES: tuple[Service, ...] = (
     Service(
-        id="consulting",
-        label="💼 Consulting",
-        description="One-on-one sessions to scope your project and pick an approach.",
+        id="links",
+        label="🔗 Get my links",
+        description="View the links on your account, copy them, and check how many clicks each one has.",
     ),
     Service(
-        id="development",
-        label="🛠 Development",
-        description="Custom builds — web apps, bots, and integrations, delivered end to end.",
+        id="plans",
+        label="💎 Memberships and plans",
+        description="Compare what each plan includes and upgrade or renew your membership.",
+    ),
+    Service(
+        id="add_domain",
+        label="➕ Add a domain",
+        description="Connect a custom domain to your account and start using it for your links.",
+    ),
+    Service(
+        id="my_domain",
+        label="🌐 My domain",
+        description="See the domains on your account, their status, and their DNS settings.",
+    ),
+    Service(
+        id="referrals",
+        label="🎁 Refer and earn",
+        description="Share your referral link and earn a reward for everyone who signs up through it.",
+    ),
+    Service(
+        id="help_channel",
+        label="📢 Help channel",
+        description="Announcements, guides, and updates.",
+        # e.g. "https://t.me/your_channel" — until this is filled in the
+        # button shows the description above instead of opening a link.
+        url="",
     ),
     Service(
         id="support",
-        label="🤝 Support",
-        description="Ongoing maintenance, monitoring, and fixes for something already live.",
-    ),
-    Service(
-        id="pricing",
-        label="💳 Pricing",
-        description="Hourly and per-project rates, with a fixed quote after a short call.",
-    ),
-    Service(
-        id="contact",
-        label="📩 Contact",
-        description="Reach a human directly — just reply here and we'll get back to you.",
+        label="🛟 Support",
+        description="Send your question here and someone will get back to you.",
+        # e.g. "https://t.me/your_support_username"
+        url="",
     ),
 )
 
@@ -57,12 +80,15 @@ def find(service_id: str) -> Service | None:
     return next((s for s in SERVICES if s.id == service_id), None)
 
 
+def _button(service: Service) -> dict:
+    if service.url:
+        return {"text": service.label, "url": service.url}
+    return {"text": service.label, "callback_data": f"{SERVICE_PREFIX}{service.id}"}
+
+
 def menu_keyboard() -> dict:
     """An inline keyboard with one button per service, laid out in rows."""
-    buttons = [
-        {"text": service.label, "callback_data": f"{SERVICE_PREFIX}{service.id}"}
-        for service in SERVICES
-    ]
+    buttons = [_button(service) for service in SERVICES]
     rows = [
         buttons[i:i + BUTTONS_PER_ROW]
         for i in range(0, len(buttons), BUTTONS_PER_ROW)
