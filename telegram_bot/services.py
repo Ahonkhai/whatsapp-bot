@@ -71,6 +71,23 @@ SERVICES: tuple[Service, ...] = (
         # e.g. "https://t.me/your_support_username"
         url="",
     ),
+    # --- Placeholders. Rename these (id, label, description) as you decide
+    # what goes here, or delete the ones you don't end up needing. ---
+    Service(
+        id="placeholder_1",
+        label="🧩 Placeholder 1",
+        description="Not set up yet — check back soon.",
+    ),
+    Service(
+        id="placeholder_2",
+        label="🧩 Placeholder 2",
+        description="Not set up yet — check back soon.",
+    ),
+    Service(
+        id="placeholder_3",
+        label="🧩 Placeholder 3",
+        description="Not set up yet — check back soon.",
+    ),
 )
 
 BUTTONS_PER_ROW = 2

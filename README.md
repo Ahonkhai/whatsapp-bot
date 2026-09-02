@@ -18,8 +18,12 @@ below to learn more.
   [ 🔗 Get my links  ]  [ 💎 Memberships and plans ]
   [ ➕ Add a domain  ]  [ 🌐 My domain             ]
   [ 🎁 Refer and earn ]  [ 📢 Help channel         ]
-  [ 🛟 Support       ]
+  [ 🛟 Support       ]  [ 🧩 Placeholder 1        ]
+  [ 🧩 Placeholder 2 ]  [ 🧩 Placeholder 3        ]
 ```
+
+The three `🧩 Placeholder` entries are empty slots — rename or delete them
+in `services.py` as you decide what goes there.
 
 Tapping a button replaces that message with the service's details and a
 **⬅️ Back to services** button, so browsing the menu never fills the chat
