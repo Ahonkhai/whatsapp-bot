@@ -1,11 +1,11 @@
 """Entrypoint.
 
-    WHATSAPP_ACCESS_TOKEN=... WHATSAPP_PHONE_NUMBER_ID=... WHATSAPP_VERIFY_TOKEN=... python run.py
+    TELEGRAM_BOT_TOKEN=... TELEGRAM_WEBHOOK_SECRET=... python run.py
 """
 
-from whatsapp_bot import config
-from whatsapp_bot.app import create_app
-from whatsapp_bot.logging_setup import setup
+from telegram_bot import config
+from telegram_bot.app import create_app
+from telegram_bot.logging_setup import setup
 
 setup()
 app = create_app()

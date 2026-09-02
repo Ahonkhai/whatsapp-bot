@@ -1,8 +1,10 @@
 # Broadcast recipient list.
-# One phone number per line, E.164 format without the leading '+'.
+# One Telegram chat ID per line (a number, e.g. 123456789).
 # Blank lines and comments (like this one) are ignored.
 #
-# Copy this file to `recipients.txt` (gitignored) and fill in real numbers
-# of people who've agreed to receive messages from this bot.
-15551234567   # Alex
-15559876543   # Sam
+# Copy this file to `recipients.txt` (gitignored) and fill in real IDs of
+# people who've agreed to receive messages from this bot. They must have
+# started a chat with the bot first — Telegram bots can't message strangers.
+# Each person can get their ID by sending the bot /whoami.
+123456789    # Alex
+987654321    # Sam

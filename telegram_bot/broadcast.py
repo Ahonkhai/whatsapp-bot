@@ -1,8 +1,8 @@
-"""Fans a message out to a list of recipients, one at a time.
+"""Fans a message out to a list of chats, one at a time.
 
 Takes the send function as a parameter (rather than importing
-`whatsapp_bot.client` directly) so it can be tested without any network
-calls or WhatsApp credentials.
+`telegram_bot.client` directly) so it can be tested without any network
+calls or a bot token.
 """
 
 import logging
@@ -28,12 +28,12 @@ class BroadcastResult:
 
 def send_broadcast(text: str, recipients: list[str], send: Callable[[str, str], None]) -> BroadcastResult:
     result = BroadcastResult()
-    for number in recipients:
+    for chat_id in recipients:
         try:
-            send(number, text)
+            send(chat_id, text)
         except Exception:
-            log.exception("broadcast failed for %s", number)
-            result.failed.append(number)
+            log.exception("broadcast failed for %s", chat_id)
+            result.failed.append(chat_id)
         else:
-            result.sent.append(number)
+            result.sent.append(chat_id)
     return result

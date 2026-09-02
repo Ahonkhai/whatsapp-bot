@@ -1,11 +1,11 @@
-from whatsapp_bot.broadcast import send_broadcast
+from telegram_bot.broadcast import send_broadcast
 
 
 def test_sends_to_everyone():
     sent = []
 
-    def send(to, body):
-        sent.append((to, body))
+    def send(chat_id, text):
+        sent.append((chat_id, text))
 
     result = send_broadcast("hi", ["1", "2", "3"], send)
 
@@ -16,8 +16,8 @@ def test_sends_to_everyone():
 
 
 def test_one_failure_does_not_stop_the_rest():
-    def send(to, body):
-        if to == "2":
+    def send(chat_id, text):
+        if chat_id == "2":
             raise RuntimeError("boom")
 
     result = send_broadcast("hi", ["1", "2", "3"], send)
